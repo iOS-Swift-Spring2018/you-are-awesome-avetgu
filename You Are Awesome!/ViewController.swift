@@ -7,11 +7,18 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var awesomeImage: UIImageView!
     @IBOutlet weak var messageLabel: UILabel!
-    var index = 0
+    var awesomePlayer = AVAudioPlayer()
+    var index = -1
+    var imageNumber = -1
+    var soundNumber = -1
+    let numberOfImages = 11
+    let numberOfSounds = 3
     
     //code below executes when app's view first loads
     override func viewDidLoad() {
@@ -20,37 +27,92 @@ class ViewController: UIViewController {
         print("The View Loaded!")
     }
     
+    func playSound(soundName: String) {
+        if let sound = NSDataAsset(name: soundName){
+            do{
+                try awesomePlayer = AVAudioPlayer(data: sound.data)
+                awesomePlayer.play()
+            }
+            catch{
+                print("ERROR: data in \(soundName) coudn't be played as a sound.")
+            }
+            
+        }
+        else {
+            print("ERROR: file \(soundName) didn't load.")
+        }
+    }
+    
+    func nonRepeatingRandom(lastNumber: Int, maxValue: Int) -> Int {
+        var newIndex = -1
+        
+        repeat {
+            newIndex = Int(arc4random_uniform(UInt32(maxValue)))
+        } while lastNumber == newIndex
+        
+        return newIndex
+    }
+    
     @IBAction func messageButtonPressed(_ sender: UIButton) {
         print("*** The button was clicked!") //use distinguishing characters to help debug more easily
-    
-//        let message1 = "You Are da Bomb"
-//        let message2 = "You Are Great"
-//        let message3 = "You Are Amazing"
-//
-//        if messageLabel.text == message1{
-//            messageLabel.text = message2
-//            messageLabel.textColor = UIColor.blue
-//        }
-//        else if messageLabel.text == message2{
-//            messageLabel.text = message3
-//            messageLabel.textColor = UIColor.red
-//        }
-//        else{
-//            messageLabel.text = message1
-//            messageLabel.textColor = UIColor.green
-//        }
         
         let messages = ["You Are Fantastic", "You Are Great",
                         "You Are Amazing", "Genius Bar Needs You!",
                         "You Brighten My Day!"]
         
-        if index == 5{
-            index = 0
-        }
-        else{
-            messageLabel.text = messages[index]
-            index += 1
-        }
+        //Show a message
+        
+        index = nonRepeatingRandom(lastNumber: index, maxValue: messages.count)
+        messageLabel.text = messages[index]
+        
+        awesomeImage.isHidden = false
+        
+        //Show an image
+        
+        imageNumber = nonRepeatingRandom(lastNumber: imageNumber, maxValue: numberOfImages)
+        awesomeImage.image = UIImage(named: "image\(imageNumber)")
+        
+        //Play a sound
+        
+        soundNumber = nonRepeatingRandom(lastNumber: soundNumber, maxValue: numberOfSounds)
+        var soundName = "sound\(soundNumber)"
+        playSound(soundName: soundName)
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
